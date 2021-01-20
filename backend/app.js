@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const userRoutes = require('./routes/user');
 
 //CORS
 app.use((req, res, next) => {
@@ -29,6 +30,11 @@ mongoose
 
 app.use(bodyParser.json());
 
+// app.use('/api/stuff', stuffRoutes);
+app.use('/api/auth', userRoutes);
+
+
+
 app.post("/api/sauces", (req, res, next) => {
   console.log(req.body);
   res.status(201).json({
@@ -40,6 +46,9 @@ app.use("/api/sauces", (req, res, next) => {
   res.status(200).json(sauces);
   next();
 });
+
+
+
 
 /* Export avec module.exports = app; pour l'utiliser 
 dans d'autres fichiers avec 
