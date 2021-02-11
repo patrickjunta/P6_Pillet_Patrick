@@ -1,11 +1,14 @@
 const express = require("express");
-//création d'appli express
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 const sauceRoutes = require("./routes/sauce");
-const path = require('path');
+const path = require("path");
+const helmet = require("helmet");
+app.use(helmet());
+require("dotenv").config();
+
 //CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -22,17 +25,23 @@ app.use((req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://patrick-junta:Wealthy77mon@cluster0.4bgvw.gcp.mongodb.net/P6?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true, }
-  ) //(node:14896) DeprecationWarning: collection.ensureIndex is deprecated.Use createIndexes instead. //useCreateIndex:true,ajouté
-  .then(() => console.log("Connexion à MongoDB réussie !")) //output {}
-  .catch(() => console.log("Connexion à MongoDB échouée !")); // output undefined
+    process.env.MONGOOSE,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    }
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
+mongoose.set("useCreateIndex", true);
+//debug mod of mongoose//
+mongoose.set("debug", true);
 
 app.use(bodyParser.json());
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", userRoutes);
 app.use("/api/sauces", sauceRoutes);
-
-
 
 module.exports = app;
